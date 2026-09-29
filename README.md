@@ -81,15 +81,15 @@ OpsPilot integrates directly with **Vectorize Hindsight Cloud**:
 - **Default Bank Identifier:** `opspilot-incidents-bank`
 
 ### Core Integration Pattern
-1. **Recall before RCA:** [`backend/app/root_cause/analyzer.py`](file:///c:/Users/bvr24/Downloads/OPSPILOT-main/OPSPILOT-main/backend/app/root_cause/analyzer.py) queries Hindsight memory banks using [`backend/app/memory/service.py`](file:///c:/Users/bvr24/Downloads/OPSPILOT-main/OPSPILOT-main/backend/app/memory/service.py) prior to executing RCA prompts.
-2. **Context Injection:** Recalled memories are formatted by [`backend/app/root_cause/prompt_builder.py`](file:///c:/Users/bvr24/Downloads/OPSPILOT-main/OPSPILOT-main/backend/app/root_cause/prompt_builder.py) into prompt context.
-3. **Retain after Recovery:** [`backend/app/remediation/service.py`](file:///c:/Users/bvr24/Downloads/OPSPILOT-main/OPSPILOT-main/backend/app/remediation/service.py) automatically retains incident resolution playbooks into Hindsight only after synthetic probes confirm 200 OK recovery.
+1. **Recall before RCA:** [backend/app/root_cause/analyzer.py](backend/app/root_cause/analyzer.py) queries Hindsight memory banks using [backend/app/memory/service.py](backend/app/memory/service.py) prior to executing RCA prompts.
+2. **Context Injection:** Recalled memories are formatted by [backend/app/root_cause/prompt_builder.py](backend/app/root_cause/prompt_builder.py) into prompt context.
+3. **Retain after Recovery:** [backend/app/remediation/service.py](backend/app/remediation/service.py) automatically retains incident resolution playbooks into Hindsight only after synthetic probes confirm 200 OK recovery.
 
 ### Key Implementation Files
-- [`backend/app/memory/hindsight_client.py`](file:///c:/Users/bvr24/Downloads/OPSPILOT-main/OPSPILOT-main/backend/app/memory/hindsight_client.py): Direct wrapper for the Vectorize Hindsight Python SDK (`hindsight-client`).
-- [`backend/app/memory/service.py`](file:///c:/Users/bvr24/Downloads/OPSPILOT-main/OPSPILOT-main/backend/app/memory/service.py): High-level retain, recall, bank reset, and status methods.
-- [`backend/app/memory/models.py`](file:///c:/Users/bvr24/Downloads/OPSPILOT-main/OPSPILOT-main/backend/app/memory/models.py): Pydantic data schemas for memory items and recall results.
-- [`backend/app/api/routes/hindsight_api.py`](file:///c:/Users/bvr24/Downloads/OPSPILOT-main/OPSPILOT-main/backend/app/api/routes/hindsight_api.py): Local REST simulation engine for offline fallback.
+- [backend/app/memory/hindsight_client.py](backend/app/memory/hindsight_client.py): Direct wrapper for the Vectorize Hindsight Python SDK (`hindsight-client`).
+- [backend/app/memory/service.py](backend/app/memory/service.py): High-level retain, recall, bank reset, and status methods.
+- [backend/app/memory/models.py](backend/app/memory/models.py): Pydantic data schemas for memory items and recall results.
+- [backend/app/api/routes/hindsight_api.py](backend/app/api/routes/hindsight_api.py): Local REST simulation engine for offline fallback.
 
 ---
 
@@ -208,7 +208,7 @@ Follow this sequence to demonstrate Hindsight memory retention and recall:
 | :--- | :--- | :--- |
 | **Backend Engine** | Python 3.10+ / FastAPI | Core control plane, REST API routes, and SSE event streaming |
 | **Data & Graph Modeling** | SQLAlchemy / Pydantic V2 / NetworkX | Database ORM, typed schema validation, and topology graph analysis |
-| **Frontend Console** | React 18 / TypeScript / Vite / Tailwind CSS | Responsive SRE command center dashboard |
+| **Frontend Console** | React 19 / TypeScript / Vite / Tailwind CSS | Responsive SRE command center dashboard |
 | **Graph Visualization** | XYFlow (React Flow) | Interactive directed service topology canvas |
 | **Persistent Memory** | Vectorize Hindsight (`hindsight-client` v0.10.1) | Vector persistent memory system for incident retain & recall |
 | **Database** | SQLite (WAL mode) | Persistent storage for metrics, alerts, incidents, and audit trails |
@@ -220,7 +220,7 @@ Follow this sequence to demonstrate Hindsight memory retention and recall:
 ## Repository Structure
 
 ```
-OPSPILOT-main/
+OpsPilot/
 ├── backend/
 │   ├── app/
 │   │   ├── api/routes/            # FastAPI REST & SSE endpoints
@@ -264,8 +264,8 @@ OPSPILOT-main/
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/opspilot.git
-cd opspilot
+git clone https://github.com/D-sah-art/OpsPilot.git
+cd OpsPilot
 ```
 
 ### 2. Install Python Dependencies
@@ -447,4 +447,4 @@ OpsPilot verifies recovery using live health signals and a synthetic checkout pr
 ---
 
 ### License
-This project is licensed under the MIT License - see the [LICENSE](file:///c:/Users/bvr24/Downloads/OPSPILOT-main/OPSPILOT-main/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
