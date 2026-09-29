@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  postgresql:
+    image: postgres:16-alpine
+    container_name: shopflow-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: shopflow
+      POSTGRES_USER: shopflow_user
+      POSTGRES_PASSWORD: shopflow_secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infrastructure/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shopflow_user -d shopflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: shopflow-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  shopflow-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shopflow-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production-simulation
+      - DEMO_MODE=true
+      - PORT=8000
+      - HOST=0.0.0.0
+      - POSTGRES_HOST=postgresql
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=shopflow
+      - POSTGRES_USER=shopflow_user
+      - POSTGRES_PASSWORD=shopflow_secret
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET_KEY=shopflow-super-secret-production-key-for-hackathon-2026
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  redisdata:

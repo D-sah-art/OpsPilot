@@ -1,0 +1,21 @@
+[
+  {
+    "id": "mem_unknown_1790697928",
+    "incident_id": "unknown",
+    "title": "Order API Simulated Fault",
+    "content": "Incident 'Order API Simulated Fault' affected microservices: order-api. Root Cause Analysis identified 'order-api' as failure origin (Incident in order-api mitigated via restart_service). Executed Safety-Gated Remediation Action: 'restart_service'. Observable Recovery Verification Status: SUCCESSFUL (200 OK). System Signals: Health HEALTHY, Active Alerts: 0.",
+    "affected_services": [
+      "order-api"
+    ],
+    "root_cause_service": "order-api",
+    "remediation_action": "restart_service",
+    "recovery_verified": true,
+    "tags": [
+      "opspilot",
+      "incident_resolution",
+      "service:order-api",
+      "service:order-api"
+    ],
+    "timestamp": "2026-09-29T16:05:28.922892+00:00"
+  }
+]

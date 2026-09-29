@@ -1,0 +1,172 @@
+scenarios:
+  database_cascade:
+    id: "database_cascade"
+    name: "Database Cascade Outage"
+    description: "PostgreSQL slow queries and connection pool exhaustion cascading upstream to Order API, Checkout API, and API Gateway."
+    severity: "CRITICAL"
+    primary_fault_service: "postgresql"
+    duration_seconds: 60
+    stages:
+      - stage: 1
+        name: "DB Query Degradation"
+        offset_seconds: 0
+        service: "postgresql"
+        state: "degraded"
+        db_latency_ms: 850
+        db_connections_pct: 75
+        customer_impact: "none"
+        description: "Initial database query lock contention causing latency spike."
+
+      - stage: 2
+        name: "Connection Pool Exhaustion"
+        offset_seconds: 2
+        service: "postgresql"
+        state: "major_outage"
+        db_latency_ms: 2400
+        db_connections_pct: 98
+        customer_impact: "low"
+        description: "PostgreSQL connection pool completely saturated. Connection queue growing."
+
+      - stage: 3
+        name: "Order API Slowdown & Timeout"
+        offset_seconds: 4
+        service: "order-api"
+        state: "degraded"
+        latency_ms: 3200
+        error_rate_pct: 45
+        customer_impact: "medium"
+        description: "Order API experiencing DB query timeouts and connection pool wait queue overflow."
+
+      - stage: 4
+        name: "Checkout Orchestrator Failure"
+        offset_seconds: 6
+        service: "checkout-api"
+        state: "major_outage"
+        latency_ms: 4500
+        error_rate_pct: 88
+        customer_impact: "high"
+        description: "Checkout API failing transactions due to downstream Order API and DB connection failures."
+
+      - stage: 5
+        name: "API Gateway 502/504 Spike"
+        offset_seconds: 8
+        service: "api-gateway"
+        state: "degraded"
+        latency_ms: 2100
+        error_rate_pct: 65
+        customer_impact: "high"
+        description: "Gateway experiencing upstream timeout errors (504 Gateway Timeout) on order and checkout routes."
+
+      - stage: 6
+        name: "Customer Checkout Degradation"
+        offset_seconds: 10
+        service: "shopflow-frontend"
+        state: "degraded"
+        customer_impact: "critical"
+        description: "Customer checkout unavailable. Graceful degradation messages active."
+
+  redis_failure:
+    id: "redis_failure"
+    name: "Redis Cache Outage"
+    description: "Redis server becomes unresponsive, triggering cache miss storm and high latency on product catalog queries."
+    severity: "HIGH"
+    primary_fault_service: "redis"
+    duration_seconds: 45
+    stages:
+      - stage: 1
+        name: "Cache Connection Loss"
+        offset_seconds: 0
+        service: "redis"
+        state: "major_outage"
+        redis_latency_ms: 1500
+        cache_hit_rate_pct: 0
+        customer_impact: "low"
+      - stage: 2
+        name: "Product API DB Fallback Storm"
+        offset_seconds: 3
+        service: "product-api"
+        state: "degraded"
+        latency_ms: 420
+        customer_impact: "low"
+
+  high_memory:
+    id: "high_memory"
+    name: "Checkout API Memory Leak"
+    description: "Checkout service accumulates uncollected memory buffers leading to GC pauses and sluggish processing."
+    severity: "MEDIUM"
+    primary_fault_service: "checkout-api"
+    duration_seconds: 40
+    stages:
+      - stage: 1
+        name: "Heap Allocation Surge"
+        offset_seconds: 0
+        service: "checkout-api"
+        state: "degraded"
+        memory_pct: 94
+        latency_ms: 650
+        customer_impact: "low"
+
+  high_latency:
+    id: "high_latency"
+    name: "Inter-Service Network Latency"
+    description: "Network packet delay injected across internal service mesh, causing response slowdown."
+    severity: "MEDIUM"
+    primary_fault_service: "api-gateway"
+    duration_seconds: 40
+    stages:
+      - stage: 1
+        name: "Network Jitter"
+        offset_seconds: 0
+        service: "api-gateway"
+        state: "degraded"
+        latency_ms: 1800
+        customer_impact: "medium"
+
+  traffic_spike:
+    id: "traffic_spike"
+    name: "Flash Sale Traffic Surge"
+    description: "10x surge in incoming visitor requests causing queue build-up and throttling."
+    severity: "MEDIUM"
+    primary_fault_service: "api-gateway"
+    duration_seconds: 45
+    stages:
+      - stage: 1
+        name: "Request Volume Spike"
+        offset_seconds: 0
+        service: "api-gateway"
+        state: "degraded"
+        request_rate_rps: 850
+        cpu_pct: 92
+        customer_impact: "low"
+
+  checkout_failure:
+    id: "checkout_failure"
+    name: "Payment Simulator Error"
+    description: "Simulated payment processor rejection causing isolated checkout transaction failures."
+    severity: "HIGH"
+    primary_fault_service: "checkout-api"
+    duration_seconds: 35
+    stages:
+      - stage: 1
+        name: "Payment Gateway Failure"
+        offset_seconds: 0
+        service: "checkout-api"
+        state: "major_outage"
+        error_rate_pct: 100
+        customer_impact: "high"
+
+  unknown_issue:
+    id: "unknown_issue"
+    name: "Multi-Service Anomaly"
+    description: "Anomalous metric jitter across multiple services without clear fatal crash."
+    severity: "LOW"
+    primary_fault_service: "product-api"
+    duration_seconds: 30
+    stages:
+      - stage: 1
+        name: "Intermittent Latency & Cache Jitter"
+        offset_seconds: 0
+        service: "product-api"
+        state: "degraded"
+        latency_ms: 310
+        customer_impact: "low"

@@ -1,0 +1,139 @@
+version: "1.0"
+updated_at: "2026-09-05T00:00:00Z"
+
+nodes:
+  - id: "shopflow-frontend"
+    name: "ShopFlow Frontend"
+    type: "frontend"
+    tier: "presentation"
+    criticality: "high"
+    description: "React Single Page Application for customer shopping journey"
+
+  - id: "api-gateway"
+    name: "API Gateway"
+    type: "gateway"
+    tier: "edge"
+    port: 8000
+    criticality: "critical"
+    description: "Reverse proxy, routing, authentication validation, telemetry and status aggregation"
+
+  - id: "product-api"
+    name: "Product API"
+    type: "service"
+    tier: "core"
+    port: 8001
+    criticality: "high"
+    description: "Catalog management, search, inventory status, and category listings"
+
+  - id: "order-api"
+    name: "Order API"
+    type: "service"
+    tier: "core"
+    port: 8002
+    criticality: "critical"
+    description: "Order creation, persistence, state transitions, and history tracking"
+
+  - id: "checkout-api"
+    name: "Checkout API"
+    type: "service"
+    tier: "core"
+    port: 8003
+    criticality: "critical"
+    description: "Checkout orchestrator, cart validation, inventory reservations, and payment processing"
+
+  - id: "auth-service"
+    name: "Auth Service"
+    type: "service"
+    tier: "core"
+    port: 8004
+    criticality: "high"
+    description: "User authentication, JWT token issuance, session validation"
+
+  - id: "postgresql"
+    name: "PostgreSQL Database"
+    type: "database"
+    tier: "data"
+    port: 5432
+    criticality: "critical"
+    description: "Primary relational datastore for orders, users, inventory, and transactions"
+
+  - id: "redis"
+    name: "Redis Cache"
+    type: "cache"
+    tier: "data"
+    port: 6379
+    criticality: "medium"
+    description: "In-memory caching layer for product catalog, sessions, and rate-limiting"
+
+edges:
+  - source: "shopflow-frontend"
+    target: "api-gateway"
+    protocol: "HTTPS"
+    type: "sync"
+    criticality: "critical"
+
+  - source: "api-gateway"
+    target: "product-api"
+    protocol: "HTTP/REST"
+    type: "sync"
+    criticality: "high"
+
+  - source: "api-gateway"
+    target: "order-api"
+    protocol: "HTTP/REST"
+    type: "sync"
+    criticality: "critical"
+
+  - source: "api-gateway"
+    target: "checkout-api"
+    protocol: "HTTP/REST"
+    type: "sync"
+    criticality: "critical"
+
+  - source: "api-gateway"
+    target: "auth-service"
+    protocol: "HTTP/REST"
+    type: "sync"
+    criticality: "high"
+
+  - source: "checkout-api"
+    target: "product-api"
+    protocol: "HTTP/REST"
+    type: "sync"
+    criticality: "high"
+
+  - source: "checkout-api"
+    target: "order-api"
+    protocol: "HTTP/REST"
+    type: "sync"
+    criticality: "critical"
+
+  - source: "checkout-api"
+    target: "postgresql"
+    protocol: "TCP/SQL"
+    type: "sync"
+    criticality: "critical"
+
+  - source: "order-api"
+    target: "postgresql"
+    protocol: "TCP/SQL"
+    type: "sync"
+    criticality: "critical"
+
+  - source: "product-api"
+    target: "redis"
+    protocol: "TCP/RESP"
+    type: "sync"
+    criticality: "medium"
+
+  - source: "product-api"
+    target: "postgresql"
+    protocol: "TCP/SQL"
+    type: "sync"
+    criticality: "high"
+
+  - source: "auth-service"
+    target: "postgresql"
+    protocol: "TCP/SQL"
+    type: "sync"
+    criticality: "high"

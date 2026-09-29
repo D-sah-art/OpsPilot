@@ -1,0 +1,40 @@
+version: "1.0"
+description: "OpsPilot Deterministic Remediation Allow-List Policy"
+
+# Global remediation master switch
+global_enabled: true
+simulation_default: true
+
+actions:
+  restart_service:
+    enabled: true
+    simulation_default: true
+    min_confidence: 0.70
+    description: "Gracefully restart stateless application service instances"
+    allowed_services:
+      - order-api
+      - checkout-api
+      - product-api
+      - auth-service
+    parameters_schema:
+      grace_period_seconds:
+        type: integer
+        default: 10
+        min: 1
+        max: 60
+
+  reset_connections:
+    enabled: true
+    simulation_default: true
+    min_confidence: 0.75
+    description: "Drain and re-establish connection pool sockets to downstream dependencies"
+    allowed_services:
+      - order-api
+      - checkout-api
+      - postgresql
+    parameters_schema:
+      drain_timeout_seconds:
+        type: integer
+        default: 5
+        min: 1
+        max: 30

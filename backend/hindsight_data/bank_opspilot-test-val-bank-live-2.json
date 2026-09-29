@@ -1,0 +1,23 @@
+[
+  {
+    "id": "mem_2_1790663608",
+    "bank_id": "opspilot-test-val-bank-live-2",
+    "content": "PostgreSQL connection pool exhausted causing checkout failures. Resolution: reset connection pool.",
+    "context": "Incident inc_test_live_002 resolution context",
+    "metadata": {
+      "incident_id": "inc_test_live_002",
+      "title": "PostgreSQL Pool Exhaustion",
+      "affected_services": "[\"postgresql\", \"checkout-api\"]",
+      "root_cause_service": "postgresql",
+      "remediation_action": "reset_db_connection_pool",
+      "recovery_verified": "true",
+      "retained_at": "2026-09-29T06:33:28.336181+00:00"
+    },
+    "tags": [
+      "opspilot",
+      "incident_resolution",
+      "service:postgresql"
+    ],
+    "timestamp": "2026-09-29T06:33:28.691537+00:00"
+  }
+]

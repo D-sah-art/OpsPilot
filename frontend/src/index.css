@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #080c14;
+  color: #e2e8f0;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  color-scheme: dark;
+}
+
+::selection {
+  background-color: rgba(14, 165, 233, 0.35);
+  color: #ffffff;
+}
+
+/* Custom modern dark scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080c14;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* React Flow custom styling */
+.react-flow__background {
+  background-color: #080c14 !important;
+}
+
+.react-flow__controls {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
+  border: 1px solid #1e293b !important;
+  background: #0d131f !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+
+.react-flow__controls button {
+  background: #0d131f !important;
+  border-bottom: 1px solid #1a2436 !important;
+  color: #64748b !important;
+  transition: all 0.15s ease;
+}
+
+.react-flow__controls button:hover {
+  background: #1a2436 !important;
+  color: #38bdf8 !important;
+}
+
+/* Subtle glow utilities */
+.glow-root-cause {
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.4), 0 0 25px -4px rgba(245, 158, 11, 0.25);
+}
+
+.glow-active-incident {
+  box-shadow: 0 0 0 1px rgba(244, 63, 94, 0.4), 0 0 20px -4px rgba(244, 63, 94, 0.2);
+}
+

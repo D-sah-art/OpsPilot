@@ -1,0 +1,73 @@
+environment: "production-simulation"
+app_name: "ShopFlow"
+version: "1.0.0"
+demo_mode: true
+
+services:
+  api-gateway:
+    name: "API Gateway"
+    port: 8000
+    host: "0.0.0.0"
+    health_endpoint: "/health"
+    timeout_seconds: 5
+    dependencies:
+      - "product-api"
+      - "order-api"
+      - "checkout-api"
+      - "auth-service"
+
+  product-api:
+    name: "Product API"
+    port: 8001
+    host: "0.0.0.0"
+    health_endpoint: "/health"
+    timeout_seconds: 3
+    dependencies:
+      - "redis"
+      - "postgresql"
+
+  order-api:
+    name: "Order API"
+    port: 8002
+    host: "0.0.0.0"
+    health_endpoint: "/health"
+    timeout_seconds: 4
+    dependencies:
+      - "postgresql"
+
+  checkout-api:
+    name: "Checkout API"
+    port: 8003
+    host: "0.0.0.0"
+    health_endpoint: "/health"
+    timeout_seconds: 5
+    dependencies:
+      - "product-api"
+      - "order-api"
+      - "postgresql"
+      - "redis"
+
+  auth-service:
+    name: "Auth Service"
+    port: 8004
+    host: "0.0.0.0"
+    health_endpoint: "/health"
+    timeout_seconds: 2
+    dependencies:
+      - "postgresql"
+
+  postgresql:
+    name: "PostgreSQL Database"
+    port: 5432
+    host: "localhost"
+    database: "shopflow"
+    pool_size: 20
+    max_overflow: 10
+    timeout_seconds: 2
+
+  redis:
+    name: "Redis Cache"
+    port: 6379
+    host: "localhost"
+    timeout_seconds: 1
+    ttl_seconds: 300
