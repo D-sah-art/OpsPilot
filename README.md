@@ -1,373 +1,450 @@
-# OpsPilot — AIOps Incident Correlation & Self-Healing Infrastructure Bot
+# OpsPilot
 
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Node.js 18+](https://img.shields.io/badge/node-18+-green.svg)](https://nodejs.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg)](https://fastapi.tiangolo.com/)
-[![React 19](https://img.shields.io/badge/React-19.0+-61DAFB.svg)](https://react.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-3.4+-38B2AC.svg)](https://tailwindcss.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-**OpsPilot** is an autonomous AIOps platform designed to monitor microservice topologies, ingest telemetry storms, perform dependency-aware 8-dimensional incident correlation, diagnose root causes with topological DAG analysis, enforce strict deterministic safety gates, execute allowlisted remediation actions, and verify observable system recovery via live telemetry signals and synthetic transaction probes.
+> Memory-powered autonomous AIOps platform that correlates cascading incidents, recalls prior operational experience with Vectorize Hindsight, performs root-cause analysis, applies safety-gated remediation, and verifies recovery.
 
 ---
 
-## 🚀 Key Highlights
-- **102 Automated Tests Passing (100% Green)**: 76 OpsPilot backend tests + 26 ShopFlow microservice tests validated continuously.
-- **Dynamic Topology Discovery (Grafana-Assisted)**: Inactive/static topology is replaced by runtime-observed service dependencies inferred from logs, alerts, health checks, and optional Grafana metrics proxy with empirical confidence accumulation ($50\% \to 99\%$) and resilient offline fallback.
-- **Core Separation of Concerns**: *"Grafana observes. OpsPilot reasons and controls."* Grafana is strictly an optional, read-only telemetry input.
-- **96.6% Alert Noise Compression**: Compresses 29 raw cascade alerts across 8 microservices into 1 coherent root-cause incident in `< 100ms`.
-- **8-Dimensional Topological-Causal Correlation**: Evaluates graph distance, causal sequencing, temporal proximity, and dependency relationships instead of naive time windows.
-- **Zero-Downtime Deterministic Fallback**: Operates **100% offline air-gapped** with deterministic topological DAG analysis, and supports optional grounded Gemini/OpenAI LLM explanations.
-- **10-Condition Deterministic Safety Gate**: Verifies allowlists, confidence thresholds, blast-radius boundaries, and execution attempt counts before executing any remediation.
-- **Closed-Loop Observable Recovery Verification**: Evaluates 4 live telemetry signals (health status, active alerts, SLA metrics, and synthetic checkout probes `200 OK`).
-- **Cryptographic Immutable Audit Trail**: Records every decision, gate evaluation, and execution payload into a local SQLite repository.
+## Problem
+
+Modern microservice platforms suffer from severe operational fragility caused by asynchronous fault cascades. When a foundational infrastructure dependency (such as a shared relational database connection pool or key-value cache) degrades, failure propagates non-linearly across upstream service topologies, triggering an explosive avalanche of secondary alerts across dependent services (HTTP 500s, gateway timeouts, thread pool starvation, latency spikes).
+
+On-call Site Reliability Engineers (SREs) face severe operational challenges:
+- **Alert Fatigue:** A single root cause can trigger dozens of redundant alerts within seconds, obscuring the primary failure point.
+- **Stateless AI Memory Loss:** Standard LLM-based troubleshooting bots operate statelessly—repeatedly rediscovering the exact same root causes and resolution steps for recurring operational incidents.
+- **Unsafe Automated Remediation:** Naive remediation bots often execute unconstrained shell commands or trigger destructive restart loops without safety policy checks.
+- **Lack of Verification:** Automated actions are frequently marked complete upon process exit without actively verifying that wall-clock user transactions are restored.
 
 ---
 
-## 📋 What It Does
+## Solution
+
+OpsPilot provides a complete closed-loop autonomous incident resolution pipeline powered by **Vectorize Hindsight Persistent Memory**:
+
+```
+ShopFlow Telemetry Stream
+       │
+       ▼
+Telemetry Ingestion Pipeline
+       │
+       ▼
+Multidimensional Alert Correlation Engine (8-D Graph Affinity)
+       │
+       ▼
+Unified Incident Creation
+       │
+       ▼
+Vectorize Hindsight Memory Recall ──► Historical Operational Context
+       │                                         │
+       ▼                                         ▼
+Root Cause Analysis (Dual-Engine Graph + LLM Grounding)
+       │
+       ▼
+Deterministic Safety Gate (10 Immutable Rules)
+       │
+       ▼
+Remediation Execution Engine (Allowlisted Primitives)
+       │
+       ▼
+Independent Multi-Signal Recovery Verifier (Synthetic Checkout Probe)
+       │
+       ▼
+Vectorize Hindsight Memory Retain ──► Long-Term Incident Bank
+```
+
+---
+
+## Why Persistent Memory Matters
+
+Stateless AIOps tools treat every incident as if it were the first time the failure ever occurred in system history. OpsPilot leverages **Vectorize Hindsight** as a central, persistent memory system to retain and recall past incident resolutions:
+
+### Run 1 — Cold Memory Bank (First Encounter)
+1. **Incident Trigger:** A PostgreSQL database connection pool leak causes secondary failures across dependent microservices.
+2. **Correlation & RCA:** OpsPilot clusters 29 raw alerts into 1 unified incident graph. Because Hindsight memory is cold, `recalled_memories = 0`.
+3. **Diagnosis & Remediation:** The Root Cause Analyzer diagnoses `postgresql` as the root cause with evidence-derived confidence and executes a safety-approved `reset_connections` remediation action.
+4. **Recovery Verification:** The Recovery Verifier executes active synthetic checkout probes ($t_{probe} \approx 8.9\text{ ms}$) to confirm cluster recovery.
+5. **Hindsight Retain:** Upon verified recovery, OpsPilot retains the complete incident resolution playbook into the Hindsight memory bank.
+
+### Run 2 — Memory-Enhanced Incident Resolution (Subsequent Encounter)
+1. **Incident Trigger:** A similar database cascade recurs in the target cluster.
+2. **Hindsight Recall:** Prior to running Root Cause Analysis, OpsPilot queries Hindsight with the active incident context. Hindsight semantically recalls the previous resolution playbook.
+3. **Context-Aware Diagnosis:** The recalled historical operational context is injected into the LLM prompt as supporting evidence alongside current live telemetry.
+4. **Authoritative Principle:** Live real-time telemetry remains strictly authoritative—recalled memory provides historical operational context without overriding observed telemetry.
+
+---
+
+## Hindsight Integration
+
+OpsPilot integrates directly with **Vectorize Hindsight Cloud**:
+
+- **Official Cloud API Host:** `https://api.hindsight.vectorize.io`
+- **Official Python Client:** `hindsight-client` (v0.10.1)
+- **Default Bank Identifier:** `opspilot-incidents-bank`
+
+### Core Integration Pattern
+1. **Recall before RCA:** [`backend/app/root_cause/analyzer.py`](file:///c:/Users/bvr24/Downloads/OPSPILOT-main/OPSPILOT-main/backend/app/root_cause/analyzer.py) queries Hindsight memory banks using [`backend/app/memory/service.py`](file:///c:/Users/bvr24/Downloads/OPSPILOT-main/OPSPILOT-main/backend/app/memory/service.py) prior to executing RCA prompts.
+2. **Context Injection:** Recalled memories are formatted by [`backend/app/root_cause/prompt_builder.py`](file:///c:/Users/bvr24/Downloads/OPSPILOT-main/OPSPILOT-main/backend/app/root_cause/prompt_builder.py) into prompt context.
+3. **Retain after Recovery:** [`backend/app/remediation/service.py`](file:///c:/Users/bvr24/Downloads/OPSPILOT-main/OPSPILOT-main/backend/app/remediation/service.py) automatically retains incident resolution playbooks into Hindsight only after synthetic probes confirm 200 OK recovery.
+
+### Key Implementation Files
+- [`backend/app/memory/hindsight_client.py`](file:///c:/Users/bvr24/Downloads/OPSPILOT-main/OPSPILOT-main/backend/app/memory/hindsight_client.py): Direct wrapper for the Vectorize Hindsight Python SDK (`hindsight-client`).
+- [`backend/app/memory/service.py`](file:///c:/Users/bvr24/Downloads/OPSPILOT-main/OPSPILOT-main/backend/app/memory/service.py): High-level retain, recall, bank reset, and status methods.
+- [`backend/app/memory/models.py`](file:///c:/Users/bvr24/Downloads/OPSPILOT-main/OPSPILOT-main/backend/app/memory/models.py): Pydantic data schemas for memory items and recall results.
+- [`backend/app/api/routes/hindsight_api.py`](file:///c:/Users/bvr24/Downloads/OPSPILOT-main/OPSPILOT-main/backend/app/api/routes/hindsight_api.py): Local REST simulation engine for offline fallback.
+
+---
+
+## Architecture
 
 ```mermaid
-graph LR
-    OBSERVE["1. OBSERVE<br/>Ingest Metrics, Logs, Alerts"]
-    CORRELATE["2. CORRELATE<br/>8-D Topological Dot Product"]
-    EXPLAIN["3. EXPLAIN<br/>DAG RCA & Post-Mortem"]
-    SAFETY["4. CHECK SAFETY<br/>10-Rule Deterministic Matrix"]
-    ACT["5. ACT<br/>Allowlisted Remediation"]
-    VERIFY["6. VERIFY<br/>Live Telemetry & Synthetic Probe"]
-    AUDIT["7. AUDIT<br/>Immutable SQLite Trail"]
+flowchart TD
 
-    OBSERVE --> CORRELATE --> EXPLAIN --> SAFETY --> ACT --> VERIFY --> AUDIT
+    subgraph ShopFlowTarget["Monitored Target Environment (Port 8000)"]
+        SF_GW[API Gateway]
+        SF_AUTH[Auth Service]
+        SF_ORDER[Order API]
+        SF_PAY[Payment Gateway]
+        SF_INV[Inventory Service]
+        SF_NOTIF[Notification Service]
+        SF_PG[(PostgreSQL DB)]
+        SF_REDIS[(Redis Cache)]
+
+        SF_GW --> SF_AUTH & SF_ORDER & SF_INV
+        SF_ORDER --> SF_PAY & SF_PG & SF_REDIS
+        SF_ORDER --> SF_NOTIF
+        SF_AUTH --> SF_PG & SF_REDIS
+        SF_INV --> SF_PG
+    end
+
+    subgraph ControlPlane["OpsPilot Control Plane Engine (Port 8080)"]
+        B[Telemetry Ingestion Pipeline]
+        C[8-D Alert Correlation Engine]
+        D[Incident Graph Generator]
+        F[Dual-Engine Root Cause Analyzer]
+        G[Deterministic Safety Gate 10 Rules]
+        H[Remediation Execution Engine]
+        I[Recovery Verification System]
+        J[Append-Only Audit Trail]
+    end
+
+    subgraph MemorySystem["Vectorize Hindsight Cloud API"]
+        E[(Hindsight Incident Bank)]
+    end
+
+    subgraph OperatorUI["OpsPilot React Command Center (Port 5173)"]
+        K[Interactive Control Dashboard]
+        L[Memory Intelligence Card]
+    end
+
+    ShopFlowTarget -->|Telemetry Stream| B
+    B --> C
+    C --> D
+
+    D -->|1. Query Prior Memories| E
+    E -->|2. Recalled Operational Context| F
+    D --> F
+
+    F --> G
+    G -->|Approved Action| H
+    G -->|Disallowed| J
+    H -->|Execute Controlled Action| ShopFlowTarget
+    H --> I
+    I -->|Active Wall-Clock Synthetic Probe| ShopFlowTarget
+    I -->|3. Retain Verified Resolution| E
+    I --> J
+
+    K --> B & D & F & G & I
+    L --> E
 ```
-
-1. **Observe**: Continuously ingests logs, metrics, alerts, and topology edges from monitored platforms.
-2. **Correlate**: Evaluates pairwise alert similarities using an 8-dimensional topological-causal vector product.
-3. **Explain**: Isolates the root cause node in the failure DAG and synthesizes an actionable diagnosis.
-4. **Check Safety**: Passes proposed remediations through a strict 10-condition policy gate before execution.
-5. **Act**: Executes allowlisted operational actions in `SIMULATION` or `REAL` mode (e.g. database connection pool reset).
-6. **Verify**: Asserts system recovery against live health checks, zero active firing alerts, nominal metric thresholds, and automated synthetic checkout probes (`POST /api/checkout`).
-7. **Audit**: Appends an immutable, queryable record with complete execution context to SQLite.
 
 ---
 
-## 🏛️ Architecture
+## Core Features
 
-OpsPilot is architected as an **external AIOps operator** decoupled from the underlying production application:
-
-```
-+-----------------------------------------------------------------------------+
-|                      ShopFlow Production Platform                           |
-|                         (http://127.0.0.1:8000)                             |
-|                                                                             |
-|   [API Gateway] ----> [Checkout API] ----> [Order API] ----> [PostgreSQL]   |
-|         |                   |                                     |         |
-|         v                   v                                     v         |
-|   [Auth Service]      [Product API] -----------------------> [Redis Cache]  |
-|                                                                             |
-|   Chaos Lab: Controlled Multi-Stage Cascade Injection (/api/chaos/*)       |
-+-----------------------------------------------------------------------------+
-                                       |
-                   Telemetry Stream & Live Probes
-                                       |
-                                       v
-+-----------------------------------------------------------------------------+
-|                          OpsPilot AIOps Engine                              |
-|                         (http://127.0.0.1:8080)                             |
-|                                                                             |
-|   +-------------------+   +--------------------+   +--------------------+   |
-|   | Ingestion Adapter |-->| Correlation Engine |-->| Root Cause Engine  |   |
-|   +-------------------+   +--------------------+   +--------------------+   |
-|                                                              |              |
-|   +-------------------+   +--------------------+   +---------v----------+   |
-|   | SQLite Audit Repo |<--| Recovery Verifier  |<--| Safety Gate Matrix |   |
-|   +-------------------+   +--------------------+   +--------------------+   |
-+-----------------------------------------------------------------------------+
-                                       |
-                             REST API Integration
-                                       |
-                                       v
-+-----------------------------------------------------------------------------+
-|                     OpsPilot Operations Console (UI)                        |
-|                         (http://127.0.0.1:5173)                             |
-|   Interactive Topology Map | KPI Summary Bar | Strategy Benchmark Modal     |
-|   Safety Gate Matrix       | Recovery Banner | Immutable Audit Log Viewer   |
-+-----------------------------------------------------------------------------+
-```
-
-- **ShopFlow (`shopflow-test/`)**: High-throughput microservice e-commerce simulator with an integrated Chaos Engine capable of triggering controlled multi-stage failure cascades.
-- **OpsPilot Backend (`backend/`)**: FastAPI-based correlation, RCA, safety-gate, remediation, and verification engine backed by SQLite.
-- **OpsPilot Frontend (`frontend/`)**: React 19 + Vite + Tailwind CSS + XYFlow interactive command console.
+- **Multi-Modal Telemetry Ingestion:** Real-time collection and deduplication of metrics, structured JSON application logs, discrete system events, and alerts.
+- **Topological Alert Correlation Engine:** 8-dimensional correlation vector scoring combining dependency graphs, shortest path distance, temporal proximity, and causal order to reduce noise.
+- **Dynamic Topology Discovery:** Aggregates live application logs, alerts, health endpoints, and optional Grafana metrics into a NetworkX directed dependency graph with asymptotic confidence scoring ($50\% \to 99\%$).
+- **Vectorize Hindsight Persistent Memory:** Semantic recall of historical incident resolutions before RCA, and automated retention after verified recovery.
+- **Dual-Engine Root Cause Analysis:** Deterministic topological back-propagation combined with schema-grounded LLM analysis (with automatic fallback on timeout or validation failure).
+- **10-Rule Deterministic Safety Gate:** Immutable policy engine enforcing allowlists, parameter bounds, deduplication windows, confidence floors, and simulation modes.
+- **Allowlisted Action Handlers:** Secure execution primitives (`reset_connections`, `restart_service`, `clear_cache`) with zero raw shell command execution.
+- **Independent Multi-Signal Recovery Verifier:** Executes wall-clock active synthetic checkout transactions ($t_{probe} \approx 8.9\text{ ms}$) against target clusters before incident resolution.
+- **Append-Only Application Audit Trail:** Tamper-resistant compliance ledger recording all decisions, safety rule results, execution outputs, and verification latencies.
+- **Interactive Command Center Console:** High-performance React + TypeScript UI featuring interactive topology graph canvas, live incident feed, memory intelligence metrics, and audit timeline.
+- **ShopFlow Chaos Target Simulator:** High-fidelity e-commerce microservice platform with built-in chaos scenarios (PostgreSQL connection leak, Redis latency spike, Auth service degradation).
 
 ---
 
-## 📁 Repository Structure
+## Demo: Learning From Incidents
+
+Follow this sequence to demonstrate Hindsight memory retention and recall:
+
+### Step 1 — Fresh Memory Bank Setup
+1. Open the OpsPilot Command Center UI at `http://127.0.0.1:5173`.
+2. Locate the **Vectorize Hindsight Intelligence Card**.
+3. Click **Reset Demo Bank** (or invoke `POST /api/memory/clear`) to start with an empty Hindsight memory bank.
+
+### Step 2 — Run 1: First Incident Encounter
+1. In ShopFlow, trigger the **PostgreSQL Connection Pool Exhaustion** chaos scenario.
+2. In OpsPilot, click **Sync Telemetry**.
+3. Click **Correlate Alerts** to cluster the 29 resulting alerts into a single incident graph.
+4. Click **Run Root Cause Analysis**. Notice that **Recalled Memories = 0**.
+5. Observe the RCA diagnosis correctly identifying `postgresql` as the root cause.
+6. Click **Execute Remediation** (`reset_connections`).
+7. Watch the **Independent Recovery Verifier** execute a synthetic checkout probe and verify HTTP 200 recovery.
+8. The incident resolution is automatically retained into Hindsight Cloud (`retained: true`).
+
+### Step 3 — Run 2: Similar Incident Recall
+1. Reset ShopFlow target state to healthy.
+2. Trigger the PostgreSQL Connection Pool scenario a second time.
+3. In OpsPilot, click **Sync Telemetry**, **Correlate Alerts**, and **Run RCA**.
+4. Observe the **Memory Intelligence Card**: **Recalled Memories > 0**.
+5. Inspect the RCA prompt context—Hindsight's recalled resolution playbook is injected as supporting evidence alongside live telemetry.
+
+---
+
+## Tech Stack
+
+| Layer | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Backend Engine** | Python 3.10+ / FastAPI | Core control plane, REST API routes, and SSE event streaming |
+| **Data & Graph Modeling** | SQLAlchemy / Pydantic V2 / NetworkX | Database ORM, typed schema validation, and topology graph analysis |
+| **Frontend Console** | React 18 / TypeScript / Vite / Tailwind CSS | Responsive SRE command center dashboard |
+| **Graph Visualization** | XYFlow (React Flow) | Interactive directed service topology canvas |
+| **Persistent Memory** | Vectorize Hindsight (`hindsight-client` v0.10.1) | Vector persistent memory system for incident retain & recall |
+| **Database** | SQLite (WAL mode) | Persistent storage for metrics, alerts, incidents, and audit trails |
+| **Target Simulator** | ShopFlow (FastAPI microservices) | 8-service e-commerce platform target for chaos injection |
+| **LLM Provider** | OpenAI / Gemini compatible endpoints | Natural language root-cause reasoning with schema guardrails |
+
+---
+
+## Repository Structure
 
 ```
-aiops-self-healing/
-├── backend/                        # OpsPilot FastAPI Engine
+OPSPILOT-main/
+├── backend/
 │   ├── app/
-│   │   ├── api/routes/             # Ingestion, correlation, incidents, benchmark, remediation
-│   │   ├── correlation/            # Phase 3 8-D correlation engine & strategies
-│   │   ├── database/               # SQLAlchemy models & SQLite TelemetryRepository
-│   │   ├── ingestion/              # ShopFlow telemetry polling adapter
-│   │   ├── models/                 # Pydantic schemas (alerts, metrics, logs, events)
-│   │   ├── remediation/            # Safety gate, executor, recovery verifier, audit trail
-│   │   ├── root_cause/             # Deterministic topological fallback & LLM analyzer
-│   │   └── topology/               # Graph traversal & shortest-path calculation
-│   ├── tests/                      # 62 backend test cases (pytest)
-│   ├── requirements.txt            # Python dependencies
-│   └── .env.example                # Backend environment configuration
-│
-├── frontend/                       # OpsPilot React Operations Console
+│   │   ├── api/routes/            # FastAPI REST & SSE endpoints
+│   │   ├── correlation/           # 8-D alert correlation engine & scoring
+│   │   ├── database/              # SQLite database session & ORM models
+│   │   ├── memory/                # Vectorize Hindsight SDK & REST engine
+│   │   ├── remediation/           # Safety gate policy & execution primitives
+│   │   ├── root_cause/            # Dual-engine RCA & LLM grounding guardrails
+│   │   └── topology/              # Dynamic discovery & graph algorithms
+│   ├── config/                    # Remediation allowlists & topology specs
+│   ├── tests/                     # Pytest suite (80 unit & integration tests)
+│   └── requirements.txt           # Backend Python dependencies
+├── frontend/
 │   ├── src/
-│   │   ├── api/                    # Typed API client for OpsPilot Backend
-│   │   ├── components/
-│   │   │   ├── Correlation/        # Benchmark Modal, Correlation Evidence
-│   │   │   ├── Header/             # KPI Summary Bar, Hero Incident Banner
-│   │   │   ├── Remediation/        # Safety Gate Matrix, Remediation Control, Recovery Banner
-│   │   │   ├── RootCause/          # RCA Diagnostic Card
-│   │   │   ├── Timeline/           # Live Event Stream & Audit Log Viewer
-│   │   │   └── Topology/           # Interactive DAG Topology Map (XYFlow)
-│   │   ├── context/                # Global OpsPilot state management
-│   │   └── types/                  # TypeScript data contracts
-│   ├── package.json                # Frontend dependencies
-│   └── vite.config.ts              # Vite configuration
-│
-├── shopflow-test/                  # ShopFlow Independent Microservice Simulator
-│   ├── chaos/                      # Multi-stage chaos engine & cascade scenarios
-│   ├── config/                     # Microservice topology YAML definition
-│   ├── services/                   # API Gateway, Auth, Product, Order, Checkout
-│   ├── telemetry/                  # In-memory metrics, logs, alerts & events engine
-│   ├── tests/                      # 26 ShopFlow platform test cases (pytest)
-│   ├── requirements.txt            # ShopFlow dependencies
-│   └── .env.example                # ShopFlow environment configuration
-│
-├── config/
-│   └── remediation_allowlist.yaml  # Remediation safety policies & allowed actions
-│
-├── start.sh                        # One-click startup script (macOS / Linux)
-├── start_all.bat                   # One-click startup script (Windows CMD)
-├── start_all.ps1                   # One-click startup script (Windows PowerShell)
-├── reset_demo.sh                   # Clean state reset script (macOS / Linux)
-├── reset_demo.bat                  # Clean state reset script (Windows CMD)
-├── reset_demo.ps1                  # Clean state reset script (Windows PowerShell)
-├── .gitignore                      # Git ignore rules
-└── README.md                       # Master Documentation
+│   │   ├── api/                   # Typed REST API client
+│   │   ├── components/            # UI components (Topology, Memory, Audit)
+│   │   ├── context/               # OpsPilot application state context
+│   │   └── App.tsx                # Main dashboard entry
+│   ├── package.json               # Node.js dependencies
+│   └── vite.config.ts             # Vite build configuration
+├── shopflow-test/
+│   ├── services/                  # ShopFlow microservices (Gateway, Auth, Order, etc.)
+│   ├── chaos/                     # Failure injection engine & scenarios
+│   ├── tests/                     # Pytest suite (26 ShopFlow integration tests)
+│   └── requirements.txt           # Target simulator dependencies
+├── docs/
+│   └── screenshots/               # Application UI screenshots
+├── .env.example                   # Global environment template
+├── .gitignore                     # Git ignore policy (excludes .env & databases)
+└── README.md                      # Primary project documentation
 ```
 
 ---
 
-## ⚙️ Prerequisites & System Requirements
+## Getting Started
 
-- **Python**: `3.10`, `3.11`, `3.12`, or `3.13`
-- **Node.js**: `18.x`, `20.x`, or `22.x`
-- **npm**: `9.x` or `10.x`
-- **Operating System**: Windows 10/11, macOS, or Linux
-- **Network**: **Zero internet connection required** after installing dependencies.
+### Prerequisites
+- **Python 3.10+**
+- **Node.js 18+** and **npm**
+- **Vectorize Hindsight Account & API Key** (Get key at [https://hindsight.vectorize.io/](https://hindsight.vectorize.io/))
 
----
-
-## 📥 Installation
-
-### 1. Clone the Repository
+### 1. Clone Repository
 ```bash
-git clone https://github.com/itsmageshwaran/OPSPILOT.git
-cd OPSPILOT
+git clone https://github.com/YOUR_USERNAME/opspilot.git
+cd opspilot
 ```
 
-### 2. Set Up ShopFlow Dependencies
+### 2. Install Python Dependencies
 ```bash
-cd shopflow-test
-python -m pip install -r requirements.txt
-cd ..
+python -m pip install -r backend/requirements.txt
+python -m pip install -r shopflow-test/requirements.txt
 ```
 
-### 3. Set Up OpsPilot Backend Dependencies
-```bash
-cd backend
-python -m pip install -r requirements.txt
-cd ..
-```
-
-### 4. Set Up OpsPilot Frontend Dependencies
+### 3. Install Frontend Dependencies
 ```bash
 cd frontend
 npm install
 cd ..
 ```
 
----
-
-## ⚡ Quick Start (All-in-One)
-
-### On Windows:
-```powershell
-.\start_all.bat
-# or in PowerShell:
-.\start_all.ps1
-```
-
-### On macOS / Linux:
+### 4. Configure Environment Variables
+Copy `.env.example` to your local `.env` file (and/or `backend/.env`):
 ```bash
-chmod +x start.sh reset_demo.sh
-./start.sh
+cp .env.example .env
 ```
+
+Configure your local `.env` file with your Vectorize Hindsight Cloud credentials:
+```env
+HINDSIGHT_BASE_URL=https://api.hindsight.vectorize.io
+HINDSIGHT_API_KEY=your_vectorize_hindsight_api_key_here
+HINDSIGHT_BANK_ID=opspilot-incidents-bank
+HINDSIGHT_ENABLED=true
+```
+
+> **Security Note:** The `.env` file is excluded from Git via `.gitignore` to prevent credential exposure.
 
 ---
 
-## 🖥️ Manual Startup Guide
+## Running OpsPilot
 
-If running services in individual terminal windows:
+Start the three core components in separate terminal windows:
 
-### Terminal 1: ShopFlow Microservices (Port 8000)
+### Terminal 1 — ShopFlow Target Microservices (Port 8000)
 ```bash
 cd shopflow-test
 python -m uvicorn services.api_gateway.main:app --port 8000 --host 127.0.0.1
 ```
-- **Health Check**: `http://127.0.0.1:8000/health`
-- **Topology API**: `http://127.0.0.1:8000/api/topology`
-- **Health Summary**: `http://127.0.0.1:8000/api/health-summary`
 
-### Terminal 2: OpsPilot Backend Engine (Port 8080)
+### Terminal 2 — OpsPilot Backend Control Plane (Port 8080)
 ```bash
 cd backend
-python -m uvicorn app.main:app --port 8080 --host 127.0.0.1 --reload
+python -m uvicorn app.main:app --port 8080 --host 127.0.0.1
 ```
-- **Health Check**: `http://127.0.0.1:8080/health`
-- **API Documentation (Swagger)**: `http://127.0.0.1:8080/docs`
 
-### Terminal 3: OpsPilot Operations Console (Port 5173)
+### Terminal 3 — OpsPilot Frontend Command Center (Port 5173)
 ```bash
 cd frontend
 npm run dev
 ```
-- **Web Interface**: `http://127.0.0.1:5173`
+
+### Service Access URLs
+- **OpsPilot Command Center UI:** `http://127.0.0.1:5173`
+- **OpsPilot Backend OpenAPI Docs:** `http://127.0.0.1:8080/docs`
+- **ShopFlow Target API Gateway:** `http://127.0.0.1:8000`
 
 ---
 
-## 🎬 Live 29-Alert Demonstration Walkthrough
+## Environment Variables
 
-Follow this step-by-step workflow in the web UI (`http://127.0.0.1:5173`):
-
-```
-+-------------------------------------------------------------------------------+
-|                             DEMO EXECUTION STAGES                             |
-+-------------------------------------------------------------------------------+
-| 1. Baseline State   | All 8 topology nodes green. 0 active alerts.            |
-| 2. Trigger Failure  | Click "Trigger DB Cascade" in the Demo Control Bar.     |
-| 3. Telemetry Storm  | 29 raw alerts flood in across 6 causal stages.          |
-| 4. Correlate Storm  | Click "Run Correlation" -> 29 alerts compress into 1.   |
-| 5. Benchmark Math   | Open "Strategy Benchmark" -> 80.9% 8-D Fidelity vs 1-D. |
-| 6. Root Cause (RCA) | Diagnose -> Pinpoints `postgresql` at 95.2% confidence. |
-| 7. Safety Gate      | Evaluates 10 deterministic rules -> APPROVED (10/10).   |
-| 8. Remediate & Heal | Click "Execute Remediation" -> Restores conn pool.      |
-| 9. Verify Recovery  | Live signals green + Synthetic checkout probe (200 OK). |
-| 10. Immutable Audit | View cryptographic execution record in SQLite Audit Log.|
-+-------------------------------------------------------------------------------+
-```
-
-### The 6-Stage Failure Cascade Breakdown
-When the **Database Cascade** scenario is triggered:
-1. **Stage 1 (T+0s)**: PostgreSQL query lock contention (`SELECT FOR UPDATE` on `orders` table) $	o$ 4 alerts.
-2. **Stage 2 (T+2s)**: PostgreSQL connection pool exhausts ($19/20$ active, wait queue depth 18) $	o$ 4 alerts.
-3. **Stage 3 (T+4s)**: Order API query timeout ($3000	ext{ms}$) & driver saturation $	o$ 5 alerts.
-4. **Stage 4 (T+6s)**: Checkout API downstream timeout & circuit breaker trips to `OPEN` $	o$ 6 alerts.
-5. **Stage 5 (T+8s)**: API Gateway upstream $504$ Gateway Timeout surge $	o$ 5 alerts.
-6. **Stage 6 (T+10s)**: Customer checkout completion drops $<15\%$ with Redis cache fallback $	o$ 5 alerts.
-- **Total Ingested Telemetry**: **29 distinct alerts across 8 services**.
+| Variable | Required | Default / Description |
+| :--- | :--- | :--- |
+| `APP_NAME` | No | `OpsPilot` |
+| `ENVIRONMENT` | No | `development` |
+| `PORT` | No | `8080` (Backend control plane port) |
+| `SHOPFLOW_BASE_URL` | Yes | `http://127.0.0.1:8000` (Monitored target address) |
+| `DATABASE_URL` | No | `sqlite:///./opspilot.db` (Local SQLite store) |
+| `HINDSIGHT_BASE_URL` | Yes | `https://api.hindsight.vectorize.io` (Hindsight API host) |
+| `HINDSIGHT_API_KEY` | Yes | Your Vectorize Hindsight Cloud API key |
+| `HINDSIGHT_BANK_ID` | Yes | `opspilot-incidents-bank` (Target memory bank) |
+| `HINDSIGHT_ENABLED` | Yes | `true` (Enable persistent memory integration) |
+| `LLM_API_KEY` | Optional | OpenAI/Gemini API key for LLM-based RCA |
+| `LLM_MODEL` | Optional | `gpt-4o-mini` (Model name for LLM RCA) |
+| `REMEDIATION_ENABLED` | Yes | `true` (Enable remediation execution) |
+| `REMEDIATION_SIMULATION_MODE` | No | `true` (Enable safe simulation mode for test runs) |
 
 ---
 
-## 📊 Core REST API Endpoints
+## Testing
 
-### ShopFlow Simulator (`http://127.0.0.1:8000`)
-- `GET /health`: Overall gateway health status.
-- `GET /api/topology`: Directed microservice dependency graph with live telemetry.
-- `GET /api/health-summary`: Aggregated system availability and degraded service counts.
-- `POST /api/checkout`: End-to-end checkout transaction endpoint.
-- `POST /api/chaos/scenario/database_cascade`: Trigger the 6-stage database cascade fault.
-- `POST /api/chaos/reset`: Immediately terminate all active faults and restore healthy baseline.
+OpsPilot includes a complete end-to-end automated test suite spanning backend algorithms, database persistence, memory integration, safety gates, and microservice chaos simulation:
 
-### OpsPilot Engine (`http://127.0.0.1:8080`)
-- `POST /api/ingestion/sync`: Poll and ingest raw telemetry from ShopFlow into SQLite.
-- `POST /api/incidents/correlate`: Run Phase 3 8-D dependency-aware incident correlation.
-- `GET /api/incidents/benchmark`: Compare Time-Only window clustering vs OpsPilot 8-D correlation.
-- `POST /api/incidents/{id}/root-cause`: Execute root cause analysis on an incident cluster.
-- `POST /api/incidents/{id}/remediate`: Evaluate 10 safety conditions and execute approved action.
-- `POST /api/incidents/{id}/remediate/verify`: Evaluate 4 observable recovery signals & synthetic probe.
-- `GET /api/incidents/{id}/audit`: Retrieve immutable SQLite audit trail for an incident.
-
----
-
-## 🧪 Running the Test Suites
-
-### 1. Backend Engine & Dynamic Discovery Tests (76 Tests)
+### Execute Complete Pytest Suite
 ```bash
-python -m pytest backend/tests/ -v
+python -m pytest backend/tests/ shopflow-test/tests/ -v
 ```
+**Test Result:** **106 passed / 106 tests green (100% pass rate)**.
 
-### 2. Dynamic Discovery Unit Tests (14 Tests)
-```bash
-python -m pytest backend/tests/test_topology_discovery.py -v
-```
-
-### 3. ShopFlow Simulator Tests (26 Tests)
-```bash
-python -m pytest shopflow-test/tests/ -v
-```
-
-### 4. Combined Regression Suite (102 Tests — 100% Green)
-```bash
-python -m pytest backend/tests/ shopflow-test/tests/ -q
-```
-
-### 5. Frontend Production Build Check
+### Execute Frontend Production Build Validation
 ```bash
 cd frontend
 npm run build
 ```
-
-### 6. Automated 5-Run Continuous Demo Validation Suite
-```bash
-python scratch/run_5_demo_cycles.py
-```
+**Build Result:** **SUCCESS** (`dist/` bundle created cleanly in ~2.3 seconds).
 
 ---
 
-## 🔒 Safety System & Security Guarantees
+## Security and Safety
 
-1. **Strict Allowlist Enforcement**: Remediation actions are matched against `config/remediation_allowlist.yaml`. Actions outside the matrix are rejected or routed to human review.
-2. **Zero Shell Execution**: OpsPilot **never invokes arbitrary shell commands** (`os.system`, `subprocess.Popen`). Remediation actions execute strictly via structured Python handlers or authenticated REST APIs.
-3. **Parameter Injection Defense**: All remediation parameters are regex-validated against command injection and path traversal patterns.
-4. **Blast-Radius Rate Limiting**: Maximum 3 automated remediation attempts per incident with a 60-second cooldown window.
-
----
-
-## 🌐 Offline & Air-Gapped Operation
-
-OpsPilot is engineered to run in mission-critical, air-gapped data centers:
-- **No Internet Required**: All correlation, topology mapping, graph traversal, safety evaluation, recovery verification, and UI rendering run locally.
-- **Deterministic RCA Fallback**: If no LLM API key (`LLM_API_KEY`) is configured, OpsPilot's deterministic topological DAG engine automatically performs root-cause identification with $95.2\%$ confidence based on structural metrics.
+- **Safety Gate Authorization:** All remediation commands must pass an immutable 10-rule safety evaluation before execution.
+- **Strict Allowlisting:** Only predefined target services and typed primitive operations (`reset_connections`, `restart_service`, `clear_cache`) are permitted.
+- **Zero Raw Shell Access:** OpsPilot never passes unconstrained shell input strings to subprocesses.
+- **Authoritative Telemetry:** Recalled historical memories provide context but never override observed real-time cluster telemetry.
+- **Credential Protection:** API keys reside strictly in server-side local `.env` files ignored by Git.
 
 ---
 
-## 🛠️ Troubleshooting Guide
+## Screenshots
 
-| Issue | Potential Cause | Resolution |
-| :--- | :--- | :--- |
-| **Port 8000, 8080, or 5173 in use** | A previous instance is still running in the background. | Run `netstat -ano \| findstr :8080` and `taskkill /PID <PID> /F`, or restart the terminal. |
-| **Recovery status shows `NOT_RECOVERED`** | Chaos was not cleared before verifying recovery. | Remediation automatically calls `/api/chaos/reset`. Run `./reset_demo.sh` to clear state. |
-| **Frontend cannot reach backend** | Backend is stopped or CORS is misconfigured. | Ensure backend is running at `http://127.0.0.1:8080` and verify `http://127.0.0.1:8080/health`. |
-| **Missing Python modules** | Dependencies not installed in active environment. | Run `pip install -r backend/requirements.txt` and `pip install -r shopflow-test/requirements.txt`. |
-| **Stale Database Records** | Old incidents lingering in SQLite. | Run `reset_demo.bat` (Windows) or `./reset_demo.sh` (macOS/Linux) to delete `opspilot.db`. |
+### OpsPilot Dashboard
+![OpsPilot Dashboard](docs/screenshots/dashboard.png)
+
+OpsPilot live incident command center showing service topology, telemetry, correlated incidents, and operational safety status.
+
+### Cascading Incident Correlation
+![Cascading Incident Correlation](docs/screenshots/incident-cascade.png)
+
+A PostgreSQL degradation produces a telemetry alert storm that OpsPilot correlates into a smaller set of root-cause-focused incidents.
+
+### Run 1 — No Historical Memory
+![Run 1 — No Historical Memory](docs/screenshots/hindsight-run1.png)
+
+A fresh Hindsight memory bank starts with no relevant historical incidents. OpsPilot performs RCA using current telemetry and later retains the verified resolution.
+
+### Run 2 — Hindsight Recall
+![Run 2 — Hindsight Recall](docs/screenshots/hindsight-run2.png)
+
+On a later similar incident, OpsPilot recalls the previous PostgreSQL failure and supplies that operational experience as supporting RCA context.
+
+### Safety-Gated Remediation
+![Safety-Gated Remediation](docs/screenshots/remediation.png)
+
+OpsPilot selects an allowlisted PostgreSQL remediation through its safety-gated execution workflow.
+
+### Verified Recovery
+![Verified Recovery](docs/screenshots/recovery.png)
+
+OpsPilot verifies recovery using live health signals and a synthetic checkout probe, then records the approved remediation in the audit trail.
 
 ---
 
-## 👥 Contributors & Team
+## Limitations
 
-Developed for **IEEE Genesis 2026 — Round 2 Prototype & Elimination Round**.  
-Repository: [https://github.com/itsmageshwaran/OPSPILOT.git](https://github.com/itsmageshwaran/OPSPILOT.git)
+- **Simulated Microservice Environment:** Evaluated primarily against the 8-service ShopFlow target platform.
+- **Scoped Action Allowlist:** Automated remediation primitives are limited to connection resets, service restarts, cache clears, and scaling primitives.
+- **External Dependency:** Memory recall depends on network connectivity to Vectorize Hindsight Cloud API (with embedded local REST fallback when offline).
 
 ---
 
-## 📄 License
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+## Future Improvements
+
+- **Kubernetes Native Controller:** Custom Resource Definitions (CRDs) and Operator deployment for production Kubernetes clusters.
+- **Prometheus & OpenTelemetry Connectors:** Direct OTLP gRPC telemetry ingestion pipeline.
+- **Multi-Tenant Memory Banks:** Environment-isolated memory banks for staging vs production clusters.
+- **Interactive Human Approval Workflow:** Slack / Teams webhooks for manual SRE sign-off on low-confidence remediation proposals.
+
+---
+
+## Team
+
+| Name | Role |
+| :--- | :--- |
+| **[Member 1]** | Lead Backend Engineer & AIOps Systems Architect |
+| **[Member 2]** | Full-Stack Developer & Hindsight Memory Integration |
+| **[Member 3]** | Site Reliability Engineer & Microservices Lead |
+
+---
+
+## Credits & Attribution
+
+- **Vectorize Hindsight:** Persistent memory system for AI agents.  
+  GitHub: [https://github.com/vectorize-io/hindsight](https://github.com/vectorize-io/hindsight)  
+  Documentation: [https://hindsight.vectorize.io/](https://hindsight.vectorize.io/)
+
+---
+
+### License
+This project is licensed under the MIT License - see the [LICENSE](file:///c:/Users/bvr24/Downloads/OPSPILOT-main/OPSPILOT-main/LICENSE) file for details.
