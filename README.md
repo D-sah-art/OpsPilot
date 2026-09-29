@@ -432,9 +432,10 @@ OpsPilot verifies recovery using live health signals and a synthetic checkout pr
 
 | Name | Role |
 | :--- | :--- |
-| **[Member 1]** | Lead Backend Engineer & AIOps Systems Architect |
-| **[Member 2]** | Full-Stack Developer & Hindsight Memory Integration |
-| **[Member 3]** | Site Reliability Engineer & Microservices Lead |
+| **D Sahithi SVL Gayathri** | Lead Backend Engineer & AIOps Systems Architect |
+| **T Mageshwaran** | Full-Stack Developer & Hindsight Memory Integration |
+| **U Naga Rishita** | Site Reliability Engineer & Microservices Lead |
+| **N Varun Naik** | Back-end Developer & Hindsight Memory Integration |
 
 ---
 
